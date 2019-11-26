@@ -59,7 +59,6 @@ public class CachedUidGeneratorTest {
     public void testParallelGenerate() throws InterruptedException, IOException {
         AtomicInteger control = new AtomicInteger(-1);
         Set<Long> uidSet = new ConcurrentSkipListSet<>();
-
         // Initialize threads
         List<Thread> threadList = new ArrayList<>(THREADS);
         for (int i = 0; i < THREADS; i++) {
