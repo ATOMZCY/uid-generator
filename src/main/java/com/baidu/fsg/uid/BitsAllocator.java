@@ -74,6 +74,7 @@ public class BitsAllocator {
         // initialize shift
         this.timestampShift = workerIdBits + sequenceBits;
         this.workerIdShift = sequenceBits;
+
     }
 
     /**
