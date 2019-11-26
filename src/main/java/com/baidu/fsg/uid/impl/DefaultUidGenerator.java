@@ -86,7 +86,7 @@ public class DefaultUidGenerator implements UidGenerator, InitializingBean {
         // initialize bits allocator
         bitsAllocator = new BitsAllocator(timeBits, workerBits, seqBits);
 
-        // initialize worker id
+        // 初始化workId，数据库自增
         workerId = workerIdAssigner.assignWorkerId();
         if (workerId > bitsAllocator.getMaxWorkerId()) {
             throw new RuntimeException("Worker id " + workerId + " exceeds the max " + bitsAllocator.getMaxWorkerId());

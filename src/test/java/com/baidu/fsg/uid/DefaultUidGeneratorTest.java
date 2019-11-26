@@ -28,8 +28,8 @@ import com.baidu.fsg.uid.impl.DefaultUidGenerator;
 public class DefaultUidGeneratorTest {
     private static final int SIZE = 100000; // 10w
     private static final boolean VERBOSE = true;
-    private static final int THREADS = Runtime.getRuntime().availableProcessors() << 1;
-    private static final int MIN_SIZE = 100; // 100
+    private static final int THREADS = Runtime.getRuntime().availableProcessors();
+    private static final int MIN_SIZE = 10; // 100
 
     @Resource
     private UidGenerator uidGenerator;
@@ -75,7 +75,7 @@ public class DefaultUidGeneratorTest {
         }
 
         // Check generate 10w times
-        Assert.assertEquals(SIZE, control.get());
+        Assert.assertEquals(MIN_SIZE, control.get());
 
         // Check UIDs are all unique
         checkUniqueID(uidSet);
@@ -86,11 +86,10 @@ public class DefaultUidGeneratorTest {
      */
     private void workerRun(Set<Long> uidSet, AtomicInteger control) {
         for (;;) {
-            int myPosition = control.updateAndGet(old -> (old == SIZE ? SIZE : old + 1));
-            if (myPosition == SIZE) {
+            int myPosition = control.updateAndGet(old -> (old == MIN_SIZE ? MIN_SIZE : old + 1));
+            if (myPosition == MIN_SIZE) {
                 return;
             }
-
             doGenerate(uidSet, myPosition);
         }
     }
@@ -120,4 +119,8 @@ public class DefaultUidGeneratorTest {
         Assert.assertEquals(MIN_SIZE, uidSet.size());
     }
 
+    @Test
+    public void showSystemThreads() {
+        System.out.println("THREADS num:" + (THREADS << 1));
+    }
 }
