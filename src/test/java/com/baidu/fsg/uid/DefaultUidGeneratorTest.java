@@ -29,6 +29,7 @@ public class DefaultUidGeneratorTest {
     private static final int SIZE = 100000; // 10w
     private static final boolean VERBOSE = true;
     private static final int THREADS = Runtime.getRuntime().availableProcessors() << 1;
+    private static final int MIN_SIZE = 100; // 100
 
     @Resource
     private UidGenerator uidGenerator;
@@ -39,8 +40,8 @@ public class DefaultUidGeneratorTest {
     @Test
     public void testSerialGenerate() {
         // Generate UID serially
-        Set<Long> uidSet = new HashSet<>(SIZE);
-        for (int i = 0; i < SIZE; i++) {
+        Set<Long> uidSet = new HashSet<>(MIN_SIZE);
+        for (int i = 0; i < MIN_SIZE; i++) {
             doGenerate(uidSet, i);
         }
 
