@@ -117,7 +117,7 @@ public class DefaultUidGeneratorTest {
      */
     private void checkUniqueID(Set<Long> uidSet) {
         System.out.println(uidSet.size());
-        Assert.assertEquals(SIZE, uidSet.size());
+        Assert.assertEquals(MIN_SIZE, uidSet.size());
     }
 
 }
