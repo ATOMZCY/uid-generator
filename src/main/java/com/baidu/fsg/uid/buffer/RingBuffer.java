@@ -47,8 +47,13 @@ public class RingBuffer {
 
     /** The size of RingBuffer's slots, each slot hold a UID */
     private final int bufferSize;
+    // indexMask = bufferSize - 1
     private final long indexMask;
+
+    // slots用来存放UID，flags用来存放读写标志
     private final long[] slots;
+    // 数组在物理上是连续存储的，flags数组用来保存id的状态（是否可消费、是否可填充），在填入id和消费id时，会被频繁的修改。
+    // 如果不进行缓存行填充，会导致频繁的缓存行失效，直接从内存中读数据。
     private final PaddedAtomicLong[] flags;
 
     /** Tail: last position sequence to produce */
@@ -61,8 +66,10 @@ public class RingBuffer {
     private final int paddingThreshold; 
     
     /** Reject put/take buffer handle policy */
+    // 拒绝方式为打印日志
     private RejectedPutBufferHandler rejectedPutHandler = this::discardPutBuffer;
-    private RejectedTakeBufferHandler rejectedTakeHandler = this::exceptionRejectedTakeBuffer; 
+    // 拒绝方式为抛出异常并打印日志
+    private RejectedTakeBufferHandler rejectedTakeHandler = this::exceptionRejectedTakeBuffer;
     
     /** Executor of padding buffer */
     private BufferPaddingExecutor bufferPaddingExecutor;
@@ -120,6 +127,7 @@ public class RingBuffer {
         }
 
         // 1. pre-check whether the flag is CAN_PUT_FLAG
+        // 计算位置，65535为一个循环
         int nextTailIndex = calSlotIndex(currentTail + 1);
         if (flags[nextTailIndex].get() != CAN_PUT_FLAG) {
             rejectedPutHandler.rejectPutBuffer(this, uid);
@@ -158,6 +166,7 @@ public class RingBuffer {
 
         // trigger padding in an async-mode if reach the threshold
         long currentTail = tail.get();
+        // 会有多个线程去触发padding事件，但最终只有一条线程去执行padding操作
         if (currentTail - nextCursor < paddingThreshold) {
             LOGGER.info("Reach the padding threshold:{}. tail:{}, cursor:{}, rest:{}", paddingThreshold, currentTail,
                     nextCursor, currentTail - nextCursor);

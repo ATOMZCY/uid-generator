@@ -56,20 +56,24 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
     private int boostPower = DEFAULT_BOOST_POWER;
     private int paddingFactor = RingBuffer.DEFAULT_PADDING_PERCENT;
     private Long scheduleInterval;
-    
+
+    // 拒绝存策略：打印日志
     private RejectedPutBufferHandler rejectedPutBufferHandler;
+    // 拒绝取策略：抛异常
     private RejectedTakeBufferHandler rejectedTakeBufferHandler;
 
     /** RingBuffer */
+    // 用于存储UID的双环形数组
     private RingBuffer ringBuffer;
+    // 填充RingBuffer的执行器
     private BufferPaddingExecutor bufferPaddingExecutor;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        // initialize workerId & bitsAllocator
+        // 初始化workId和bitsAllocator
         super.afterPropertiesSet();
         
-        // initialize RingBuffer & RingBufferPaddingExecutor
+        // 初始化RingBuffer和填充RingBuffer执行器
         this.initRingBuffer();
         LOGGER.info("Initialized RingBuffer successfully.");
     }
@@ -118,12 +122,12 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
      * Initialize RingBuffer & RingBufferPaddingExecutor
      */
     private void initRingBuffer() {
-        // initialize RingBuffer
+        // 初始化RingBuffer
         int bufferSize = ((int) bitsAllocator.getMaxSequence() + 1) << boostPower;
         this.ringBuffer = new RingBuffer(bufferSize, paddingFactor);
         LOGGER.info("Initialized ring buffer size:{}, paddingFactor:{}", bufferSize, paddingFactor);
 
-        // initialize RingBufferPaddingExecutor
+        // 初始化填充RingBuffer执行器
         boolean usingSchedule = (scheduleInterval != null);
         this.bufferPaddingExecutor = new BufferPaddingExecutor(ringBuffer, this::nextIdsForOneSecond, usingSchedule);
         if (usingSchedule) {

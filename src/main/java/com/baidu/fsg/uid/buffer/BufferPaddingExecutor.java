@@ -140,7 +140,7 @@ public class BufferPaddingExecutor {
     public void paddingBuffer() {
         LOGGER.info("Ready to padding buffer lastSecond:{}. {}", lastSecond.get(), ringBuffer);
 
-        // is still running
+        // executor在执行，不是RingBuffer在执行，避免多线程同时扩容
         if (!running.compareAndSet(false, true)) {
             LOGGER.info("Padding buffer is still running. {}", ringBuffer);
             return;

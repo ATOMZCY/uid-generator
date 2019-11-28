@@ -28,6 +28,7 @@ public class CachedUidGeneratorTest {
     private static final int SIZE = 7000000; // 700w
     private static final boolean VERBOSE = false;
     private static final int THREADS = Runtime.getRuntime().availableProcessors() << 1;
+    private static final int MIN_SIZE = 1000000;
 
     @Resource
     private UidGenerator uidGenerator;
@@ -40,8 +41,8 @@ public class CachedUidGeneratorTest {
     @Test
     public void testSerialGenerate() throws IOException {
         // Generate UID serially
-        Set<Long> uidSet = new HashSet<>(SIZE);
-        for (int i = 0; i < SIZE; i++) {
+        Set<Long> uidSet = new HashSet<>(MIN_SIZE);
+        for (int i = 0; i < MIN_SIZE; i++) {
             doGenerate(uidSet, i);
         }
 
@@ -120,7 +121,7 @@ public class CachedUidGeneratorTest {
      */
     private void checkUniqueID(Set<Long> uidSet) throws IOException {
         System.out.println(uidSet.size());
-        Assert.assertEquals(SIZE, uidSet.size());
+        Assert.assertEquals(MIN_SIZE, uidSet.size());
     }
 
 }
